@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { token_user } from './key';
 
 const baseUrl = 'https://express-todo-api-eta.vercel.app';
 
@@ -13,7 +12,7 @@ export const getTodosByUser = async (id) => {
   return response.data.data;
 };
 
-export const login = async (user) => {
-  const response = await axios.post(`${baseUrl}/users/auth`, user);
-  localStorage.setItem(token_user, response.data.token);
+export const getAllUsers = async () => {
+  const response = await axios.get(`${baseUrl}/users`);
+  return response.data.data;
 };

@@ -1,8 +1,17 @@
+import { Navigate } from 'react-router-dom';
+import TodoList from '../components/TodoList';
 import { useContext } from 'react';
-import { TodosContext } from '../context/todosContext';
+import { UserContext } from '../context/userContext';
 
 function Todos() {
-  return <div>Todos</div>;
+  const { userData } = useContext(UserContext);
+
+  return (
+    <div>
+      {userData == null && <Navigate to="/login" />}
+      <TodoList />
+    </div>
+  );
 }
 
 export default Todos;

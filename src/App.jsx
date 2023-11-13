@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import { TodosContextProvider } from './context/TodosContext';
 import { UserContextProvider } from './context/userContext';
-import { TodosContextProvider } from './context/todosContext';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <div className="h-screen w-full ">
         <UserContextProvider>
           <TodosContextProvider>
+            <Navigation />
             <Outlet />
           </TodosContextProvider>
         </UserContextProvider>
