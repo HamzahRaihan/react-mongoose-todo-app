@@ -40,15 +40,18 @@ export const TodosContextProvider = ({ children }) => {
       }
     );
     setTodos([...todos, data.addTodos]);
+    setLoading(false);
   };
 
-  const handleEdit = async (id, todo) => {
+  const handleEdit = async (id, todo, isChecked) => {
+    setLoading(true);
     const index = todos.findIndex((item) => item._id == id);
     console.log('🚀 ~ file: TodosContext.jsx:46 ~ handleEdit ~ id:', id);
     await axios.put(
       `https://express-todo-api-eta.vercel.app/todos/${id}`,
       {
         todo: todo,
+        isComplete: isChecked,
       },
       {
         headers: {
@@ -59,12 +62,14 @@ export const TodosContextProvider = ({ children }) => {
 
     const updatedTodos = [...todos];
 
-    updatedTodos[index] = { ...updatedTodos[index], todo: todo };
+    updatedTodos[index] = { ...updatedTodos[index], todo: todo, isComplete: isChecked };
 
     setTodos(updatedTodos);
+    setLoading(false);
   };
 
   const handleDelete = async (id) => {
+    setLoading(true);
     const deleteTodo = todos.filter((item) => item._id !== id);
     await axios.delete(`https://express-todo-api-eta.vercel.app/todos/${id}`, {
       headers: {
@@ -72,6 +77,7 @@ export const TodosContextProvider = ({ children }) => {
       },
     });
     setTodos(deleteTodo);
+    setLoading(false);
   };
 
   return <TodosContext.Provider value={{ todos, handleEdit, handleSubmit, loading, handleDelete }}>{children}</TodosContext.Provider>;

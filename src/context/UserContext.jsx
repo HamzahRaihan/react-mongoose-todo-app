@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ACCOUNT_KEY, token_user } from '../constant/key';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import { getAllUsers, register } from '../constant/api';
 
 export const UserContext = createContext({
   handleLogin: async () => {},
@@ -11,10 +12,13 @@ export const UserContext = createContext({
   id: undefined,
   setUserData: () => {},
   handleLogout: () => {},
+  handleRegister: async () => {},
 });
 
 export const UserContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(undefined);
+  const [users, setUsers] = useState([]);
+  console.log('🚀 ~ file: userContext.jsx:21 ~ UserContextProvider ~ users:', users);
   const [id, setId] = useState(undefined);
   const navigate = useNavigate();
 
@@ -28,6 +32,27 @@ export const UserContextProvider = ({ children }) => {
       setId(undefined);
       setUserData(null);
     }
+  }, []);
+
+  const handleRegister = async (name, email, password) => {
+    try {
+      const validate = users.filter((user) => user.email == email);
+      if (!validate) {
+        await register(name, email, password);
+        navigate('/login');
+      } else {
+        alert('Email already used');
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setUsers(await getAllUsers());
+    };
+    fetchUsers();
   }, []);
 
   const handleLogin = async (email, password) => {
@@ -73,5 +98,5 @@ export const UserContextProvider = ({ children }) => {
     }
   }, [navigate, userData]);
 
-  return <UserContext.Provider value={{ id, handleLogin, handleLogout, userData, setUserData }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ id, handleLogin, handleLogout, userData, setUserData, handleRegister }}>{children}</UserContext.Provider>;
 };

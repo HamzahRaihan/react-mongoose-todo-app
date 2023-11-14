@@ -21,6 +21,15 @@ export const getTodosByUser = async (id) => {
   }
 };
 
+export const register = async (name, email, password) => {
+  const { data } = await axios.post(`${baseUrl}/users`, {
+    name: name,
+    email: email,
+    password: password,
+  });
+  return data.data;
+};
+
 export const getAllUsers = async () => {
   const response = await axios.get(`${baseUrl}/users`);
   return response.data.data;
