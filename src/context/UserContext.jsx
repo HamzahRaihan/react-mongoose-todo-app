@@ -18,7 +18,6 @@ export const UserContext = createContext({
 export const UserContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(undefined);
   const [users, setUsers] = useState([]);
-  console.log('🚀 ~ file: userContext.jsx:21 ~ UserContextProvider ~ users:', users);
   const [id, setId] = useState(undefined);
   const navigate = useNavigate();
 
