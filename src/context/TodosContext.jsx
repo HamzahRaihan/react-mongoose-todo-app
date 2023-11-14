@@ -43,7 +43,7 @@ export const TodosContextProvider = ({ children }) => {
   };
 
   const handleEdit = async (id, todo) => {
-    const findId = todos.findIndex((item) => item._id == id);
+    const index = todos.findIndex((item) => item._id == id);
     console.log('🚀 ~ file: TodosContext.jsx:46 ~ handleEdit ~ id:', id);
     await axios.put(
       `https://express-todo-api-eta.vercel.app/todos/${id}`,
@@ -59,7 +59,7 @@ export const TodosContextProvider = ({ children }) => {
 
     const updatedTodos = [...todos];
 
-    updatedTodos[findId] = { ...updatedTodos[findId], todo: todo };
+    updatedTodos[index] = { ...updatedTodos[index], todo: todo };
 
     setTodos(updatedTodos);
   };
