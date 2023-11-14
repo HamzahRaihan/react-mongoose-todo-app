@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getTodosByUser } from '../constant/api';
 import axios from 'axios';
 import { token_user } from '../constant/key';
-import { UserContext } from './userContext';
+import { UserContext } from './UserContext';
 
 export const TodosContext = createContext({
   todos: [],

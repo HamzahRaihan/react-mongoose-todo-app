@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import { TodosContextProvider } from './context/TodosContext';
-import { UserContextProvider } from './context/userContext';
+import { UserContextProvider } from './context/UserContext';
 
 function App() {
   return (
