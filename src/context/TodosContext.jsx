@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
-import { createContext, useEffect, useState } from 'react';
-import { getAllTodos } from '../constant/api';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getTodosByUser } from '../constant/api';
 import axios from 'axios';
-import { ACCOUNT_KEY, token_user } from '../constant/key';
+import { token_user } from '../constant/key';
+import { UserContext } from './userContext';
 
 export const TodosContext = createContext({
   todos: [],
@@ -10,52 +11,68 @@ export const TodosContext = createContext({
   filteredTodo: [],
   handleSubmit: async () => {},
   handleDelete: async () => {},
+  handleEdit: async () => {},
 });
 
 export const TodosContextProvider = ({ children }) => {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filteredTodo, setFilteredTodo] = useState([]);
-
   const token = localStorage.getItem(token_user);
-  const id = JSON.parse(localStorage.getItem(ACCOUNT_KEY));
+
+  const { id } = useContext(UserContext);
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      setTodos(await getAllTodos());
+    const getTodos = async () => {
+      setTodos(await getTodosByUser(id));
     };
-    fetchTodos();
+    getTodos();
     setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const id = JSON.parse(localStorage.getItem(ACCOUNT_KEY));
-    const filtered = todos.filter((f) => f.userId._id === id.id);
-    setFilteredTodo(filtered);
-  }, [todos]);
+  }, [id]);
 
   const handleSubmit = async (todo) => {
     const { data } = await axios.post(
       'https://express-todo-api-eta.vercel.app/todos',
-      { todo: todo, isComplete: false, userId: id.id },
+      { todo: todo, isComplete: false, userId: id },
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    setFilteredTodo([...filteredTodo, data.addTodos]);
+    setTodos([...todos, data.addTodos]);
+  };
+
+  const handleEdit = async (id, todo) => {
+    const findId = todos.findIndex((item) => item._id == id);
+    console.log('🚀 ~ file: TodosContext.jsx:46 ~ handleEdit ~ id:', id);
+    await axios.put(
+      `https://express-todo-api-eta.vercel.app/todos/${id}`,
+      {
+        todo: todo,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const updatedTodos = [...todos];
+
+    updatedTodos[findId] = { ...updatedTodos[findId], todo: todo };
+
+    setTodos(updatedTodos);
   };
 
   const handleDelete = async (id) => {
-    const deleteTodo = filteredTodo.filter((item) => item._id !== id);
+    const deleteTodo = todos.filter((item) => item._id !== id);
     await axios.delete(`https://express-todo-api-eta.vercel.app/todos/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    setFilteredTodo(deleteTodo);
+    setTodos(deleteTodo);
   };
 
-  return <TodosContext.Provider value={{ todos, filteredTodo, handleSubmit, loading, handleDelete }}>{children}</TodosContext.Provider>;
+  return <TodosContext.Provider value={{ todos, handleEdit, handleSubmit, loading, handleDelete }}>{children}</TodosContext.Provider>;
 };

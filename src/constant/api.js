@@ -7,9 +7,18 @@ export const getAllTodos = async () => {
   return response.data.data;
 };
 
-export const getTodosByUser = async (id) => {
+export const getTodosByID = async (id) => {
   const response = await axios.get(`${baseUrl}/todos/${id}`);
   return response.data.data;
+};
+
+export const getTodosByUser = async (id) => {
+  try {
+    const response = await axios.get(`${baseUrl}/users/${id}/todos`);
+    return response.data.data;
+  } catch (error) {
+    console.log('You have not log in yet');
+  }
 };
 
 export const getAllUsers = async () => {

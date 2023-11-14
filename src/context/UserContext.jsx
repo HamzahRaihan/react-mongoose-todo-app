@@ -8,19 +8,24 @@ import axios from 'axios';
 export const UserContext = createContext({
   handleLogin: async () => {},
   userData: undefined,
+  id: undefined,
   setUserData: () => {},
   handleLogout: () => {},
 });
 
 export const UserContextProvider = ({ children }) => {
-  const navigate = useNavigate();
   const [userData, setUserData] = useState(undefined);
+  const [id, setId] = useState(undefined);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loginToken = localStorage.getItem(token_user);
+    const id = JSON.parse(localStorage.getItem(ACCOUNT_KEY));
     if (loginToken) {
+      setId(id.id);
       setUserData(loginToken);
     } else {
+      setId(undefined);
       setUserData(null);
     }
   }, []);
@@ -30,18 +35,24 @@ export const UserContextProvider = ({ children }) => {
       email: email,
       password: password,
     };
-    const response = await axios.post('https://express-todo-api-eta.vercel.app/users/auth', user);
-    if (response.status == 200) {
-      localStorage.setItem(token_user, response.data.token);
-      const decoded = jwtDecode(localStorage.getItem(token_user));
-      localStorage.setItem(ACCOUNT_KEY, JSON.stringify(decoded));
-      setUserData(localStorage.getItem(token_user));
-      navigate('/');
-    } else if (response.status == 404) {
-      console.error('Email or Password is Wrong');
-      navigate('/login');
-    } else {
-      console.error('Internal server error');
+    try {
+      const response = await axios.post('https://express-todo-api-eta.vercel.app/users/auth', user);
+      if (response.status == 200) {
+        localStorage.setItem(token_user, response.data.token);
+        const decoded = jwtDecode(localStorage.getItem(token_user));
+        localStorage.setItem(ACCOUNT_KEY, JSON.stringify(decoded));
+        const id = decoded.id;
+        setId(id);
+        setUserData(localStorage.getItem(token_user));
+        navigate('/');
+      } else if (response.status == 404) {
+        console.error('Email or Password is Wrong');
+        navigate('/login');
+      } else {
+        console.error('Internal server error');
+      }
+    } catch (error) {
+      console.error('An error occurred during login:', error);
     }
   };
 
@@ -49,6 +60,7 @@ export const UserContextProvider = ({ children }) => {
     localStorage.removeItem(token_user);
     localStorage.removeItem(ACCOUNT_KEY);
     setUserData(null);
+    setId(undefined);
     navigate('/login');
   };
 
@@ -61,5 +73,5 @@ export const UserContextProvider = ({ children }) => {
     }
   }, [navigate, userData]);
 
-  return <UserContext.Provider value={{ handleLogin: handleLogin, handleLogout: handleLogout, userData: userData, setUserData: setUserData }}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={{ id, handleLogin, handleLogout, userData, setUserData }}>{children}</UserContext.Provider>;
 };
