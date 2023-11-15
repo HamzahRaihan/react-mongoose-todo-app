@@ -14,11 +14,11 @@ function TodoList() {
 
   const [fileUrl, setFileUrl] = useState('');
 
-  const [setPublicId] = useState('');
+  const [publicId, setPublicId] = useState();
   // Replace with your own cloud name
-  const [cloudName] = useState('hzxyensd5');
+  const [cloudName] = useState(import.meta.env.VITE_CLOUDINARY_NAME);
   // Replace with your own upload preset
-  const [uploadPreset] = useState('aoh4fpwm');
+  const [uploadPreset] = useState(import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
 
   // Upload Widget Configuration
   // Remove the comments from the code below to add
@@ -47,7 +47,6 @@ function TodoList() {
   const handleAddTodo = (e) => {
     e.preventDefault();
     handleSubmit(input, fileUrl);
-    console.log('🚀 ~ file: TodoList.jsx:16 ~ TodoList ~ fileUrl:', fileUrl);
   };
 
   const handleEditModal = (id) => {
@@ -72,7 +71,7 @@ function TodoList() {
 
   return (
     <div className="p-7">
-      <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} />
+      <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} fileUrl={fileUrl} />
       <form className="flex gap-2" onSubmit={handleAddTodo}>
         <input className="border border-black" type="text" value={input} onChange={(e) => setInput(e.target.value)} />
         <button className="border border-black px-2">add</button>

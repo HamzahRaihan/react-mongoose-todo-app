@@ -32,7 +32,7 @@ export const TodosContextProvider = ({ children }) => {
   const handleSubmit = async (todo, fileUrl) => {
     const { data } = await axios.post(
       'https://express-todo-api-eta.vercel.app/todos',
-      { todo: todo, isComplete: false, userId: id, fileUrl: fileUrl },
+      { todo: todo, isComplete: false, userId: id, image: fileUrl },
       {
         headers: {
           Authorization: `Bearer ${token}`,
