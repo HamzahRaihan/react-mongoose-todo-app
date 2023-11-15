@@ -28,10 +28,8 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId, setFileUrl }) {
 
   const initializeCloudinaryWidget = () => {
     if (loaded) {
-      var myWidget = window.cloudinary.createUploadWidget(uwConfig, (error, result) => {
+      let myWidget = window.cloudinary.createUploadWidget(uwConfig, (error, result) => {
         if (!error && result && result.event === 'success') {
-          console.log('Done! Here is the image info: ', result.info);
-          console.log('Done! Here is the image info: ', result.info.secure_url);
           setPublicId(result.info.public_id);
           setFileUrl(result.info.secure_url);
         }

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import { TodosContextProvider } from './context/TodosContext';
 import { UserContextProvider } from './context/UserContext';
+import { CloudinaryScriptContext } from './components/CloudinaryUploadWidget';
 
 function App() {
   return (

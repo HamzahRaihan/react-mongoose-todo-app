@@ -2,7 +2,8 @@ import { useContext, useMemo, useState } from 'react';
 import { TodosContext } from '../context/TodosContext';
 import { filterTodos } from '../utils/utils';
 import Todos from './Todos';
-import CloudinaryUploadWidget from './CloudinaryUploadWidget';
+import CloudinaryUploadWidget, { CloudinaryScriptContext } from './CloudinaryUploadWidget';
+import Swal from 'sweetalert2';
 
 function TodoList() {
   const [input, setInput] = useState('');
@@ -10,6 +11,7 @@ function TodoList() {
   const [edit, setEdit] = useState('');
   const [todoId, setTodoId] = useState('');
   const [tab, setTab] = useState('all');
+
   const { todos, handleSubmit, handleEdit, handleDelete, loading } = useContext(TodosContext);
 
   const [fileUrl, setFileUrl] = useState('');
@@ -46,7 +48,24 @@ function TodoList() {
 
   const handleAddTodo = (e) => {
     e.preventDefault();
-    handleSubmit(input, fileUrl);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, add new todo!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          preConfirm: await handleSubmit(input, fileUrl),
+          title: 'Succeed!',
+          text: 'Your Todo has been added.',
+          icon: 'success',
+        });
+      }
+    });
   };
 
   const handleEditModal = (id) => {
@@ -70,12 +89,14 @@ function TodoList() {
   const visibleTodos = useMemo(() => filterTodos(todos, tab), [todos, tab]);
 
   return (
-    <div className="p-7">
-      <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} fileUrl={fileUrl} />
-      <form className="flex gap-2" onSubmit={handleAddTodo}>
-        <input className="border border-black" type="text" value={input} onChange={(e) => setInput(e.target.value)} />
-        <button className="border border-black px-2">add</button>
-      </form>
+    <div className="max-w-5xl mx-auto p-7">
+      <div className="flex gap-2 ">
+        <form className="flex" onSubmit={handleAddTodo}>
+          <input className="border border-black" type="text" value={input} onChange={(e) => setInput(e.target.value)} />
+          <button className="border border-black px-2">add</button>
+        </form>
+        <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} fileUrl={fileUrl} />
+      </div>
       <div className="flex gap-2">
         {buttons.map((btn) => (
           <button className={`${tab == btn.value ? 'font-bold' : ''}`} key={btn.value} value={btn.value} onClick={() => setTab(btn.value)}>
