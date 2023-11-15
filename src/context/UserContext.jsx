@@ -88,14 +88,14 @@ export const UserContextProvider = ({ children }) => {
     navigate('/login');
   };
 
-  useEffect(() => {
-    if (userData !== undefined && userData === null) {
-      navigate('/login');
-    }
-    if (userData !== undefined && userData !== null && window.location.href.includes('/login')) {
-      navigate('/');
-    }
-  }, [navigate, userData]);
+  // useEffect(() => {
+  //   if (userData !== undefined && userData === null) {
+  //     navigate('/login');
+  //   }
+  //   if (userData !== undefined && userData !== null && window.location.href.includes('/login')) {
+  //     navigate('/');
+  //   }
+  // }, [navigate, userData]);
 
   return <UserContext.Provider value={{ id, handleLogin, handleLogout, userData, setUserData, handleRegister }}>{children}</UserContext.Provider>;
 };

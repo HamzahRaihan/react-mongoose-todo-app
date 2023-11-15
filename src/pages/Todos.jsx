@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import TodoList from '../components/TodoList';
 import { useContext } from 'react';
 import { UserContext } from '../context/UserContext';
@@ -8,7 +7,7 @@ function Todos() {
 
   return (
     <div>
-      {userData == null && <Navigate to="/login" />}
+      {userData == null && <div>You have not log in yet</div>}
       <TodoList />
     </div>
   );
