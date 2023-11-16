@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { useEffect, useRef } from 'react';
 
@@ -7,30 +8,36 @@ const UploadWidget = ({ children, onUpload }) => {
   const widget = useRef();
   useEffect(() => {
     // Store the Cloudinary window instance to a ref when the page renders
+    const handleIdle = () => {
+      if (!widget.current) {
+        widget.current = createWidget();
+      }
+    };
 
     if (!cloudinary) {
       cloudinary = window.cloudinary;
     }
 
-    // To help improve load time of the widget on first instance, use requestIdleCallback
+    // To help improve load time of the widget on the first instance, use requestIdleCallback
     // to trigger widget creation. If requestIdleCallback isn't supported, fall back to
     // setTimeout: https://caniuse.com/requestidlecallback
 
-    function onIdle() {
-      if (!widget.current) {
-        widget.current = createWidget();
-      }
+    if ('requestIdleCallback' in window) {
+      const idleCallbackId = requestIdleCallback(handleIdle);
+      return () => {
+        cancelIdleCallback(idleCallbackId);
+        widget.current?.destroy();
+        widget.current = undefined;
+      };
+    } else {
+      const timeoutId = setTimeout(handleIdle, 1);
+      return () => {
+        clearTimeout(timeoutId);
+        widget.current?.destroy();
+        widget.current = undefined;
+      };
     }
-
-    'requestIdleCallback' in window ? requestIdleCallback(onIdle) : setTimeout(onIdle, 1);
-
-    return () => {
-      widget.current?.destroy();
-      widget.current = undefined;
-    };
-    // eslint-disable-next-line
   }, []);
-
   /**
    * createWidget
    * @description Creates a new instance of the Cloudinary widget and stores in a ref
@@ -73,7 +80,6 @@ const UploadWidget = ({ children, onUpload }) => {
   function open() {
     if (!widget.current) {
       widget.current = createWidget();
-      console.log(createWidget());
     }
     widget.current && widget.current.open();
   }

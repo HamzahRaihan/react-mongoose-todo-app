@@ -49,16 +49,16 @@ function TodoList() {
     // theme: "purple", //change to a purple theme
   });
 
-  function handleOnUpload(error, result, widget) {
-    if (error) {
-      updateError(error);
-      widget.close({
-        quiet: true,
-      });
-      return;
-    }
-    setFileUrl(result?.info?.secure_url);
-  }
+  // function handleOnUpload(error, result, widget) {
+  //   if (error) {
+  //     updateError(error);
+  //     widget.close({
+  //       quiet: true,
+  //     });
+  //     return;
+  //   }
+  //   setFileUrl(result?.info?.secure_url);
+  // }
 
   const handleAddTodo = (e) => {
     e.preventDefault();
@@ -110,11 +110,10 @@ function TodoList() {
             add
           </button>
         </form>
-        <UploadWidget onUpload={handleOnUpload}>
+        {/* <UploadWidget onUpload={handleOnUpload}>
           {({ open }) => {
             function handleOnClick(e) {
               e.preventDefault();
-              console.log(open);
               open();
             }
             return (
@@ -123,7 +122,7 @@ function TodoList() {
               </button>
             );
           }}
-        </UploadWidget>
+        </UploadWidget> */}
         <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} fileUrl={fileUrl} />
       </div>
       <div className="flex gap-2">
