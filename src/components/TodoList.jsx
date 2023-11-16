@@ -2,8 +2,9 @@ import { useContext, useMemo, useState } from 'react';
 import { TodosContext } from '../context/TodosContext';
 import { filterTodos } from '../utils/utils';
 import Todos from './Todos';
-import CloudinaryUploadWidget, { CloudinaryScriptContext } from './CloudinaryUploadWidget';
 import Swal from 'sweetalert2';
+import UploadWidget from './UploadWIdget';
+import CloudinaryUploadWidget from './CloudinaryUploadWidget';
 
 function TodoList() {
   const [input, setInput] = useState('');
@@ -21,6 +22,8 @@ function TodoList() {
   const [cloudName] = useState(import.meta.env.VITE_CLOUDINARY_NAME);
   // Replace with your own upload preset
   const [uploadPreset] = useState(import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+
+  const [error, updateError] = useState();
 
   // Upload Widget Configuration
   // Remove the comments from the code below to add
@@ -45,6 +48,17 @@ function TodoList() {
     // maxImageWidth: 2000, //Scales the image down to a width of 2000 pixels before uploading
     // theme: "purple", //change to a purple theme
   });
+
+  function handleOnUpload(error, result, widget) {
+    if (error) {
+      updateError(error);
+      widget.close({
+        quiet: true,
+      });
+      return;
+    }
+    setFileUrl(result?.info?.secure_url);
+  }
 
   const handleAddTodo = (e) => {
     e.preventDefault();
@@ -74,7 +88,6 @@ function TodoList() {
   };
 
   const handleEditButton = (todoId, edit, complete) => {
-    console.log('🚀 ~ file: TodoList.jsx:23 ~ handleEditButton ~ complete:', complete);
     handleEdit(todoId, edit, complete);
     setModal(false);
     setEdit('');
@@ -92,9 +105,25 @@ function TodoList() {
     <div className="max-w-5xl mx-auto p-7">
       <div className="flex gap-2 ">
         <form className="flex" onSubmit={handleAddTodo}>
-          <input className="border border-black" type="text" value={input} onChange={(e) => setInput(e.target.value)} />
-          <button className="border border-black px-2">add</button>
+          <input className="border border-black" type="text" value={input} onChange={(e) => setInput(e.target.value)} required />
+          <button className="border border-black px-2 disabled:bg-neutral-400" disabled={input.length == 0}>
+            add
+          </button>
         </form>
+        <UploadWidget onUpload={handleOnUpload}>
+          {({ open }) => {
+            function handleOnClick(e) {
+              e.preventDefault();
+              console.log(open);
+              open();
+            }
+            return (
+              <button className="bg-blue-500 text-white p-2 disabled:bg-blue-100" onClick={handleOnClick}>
+                Upload an Image
+              </button>
+            );
+          }}
+        </UploadWidget>
         <CloudinaryUploadWidget uwConfig={uwConfig} setPublicId={setPublicId} setFileUrl={setFileUrl} fileUrl={fileUrl} />
       </div>
       <div className="flex gap-2">

@@ -21,7 +21,7 @@ function CloudinaryUploadWidget({ uwConfig, setPublicId, setFileUrl }) {
         document.body.appendChild(script);
       } else {
         // If already loaded, update the state
-        setLoaded(true);
+        setLoaded(false);
       }
     }
   }, [loaded]);
